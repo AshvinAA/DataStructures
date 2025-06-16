@@ -1,0 +1,351 @@
+from xml.sax.handler import property_lexical_handler
+
+
+
+
+class LinkedList:
+    class Node:
+        def __init__(self, value):
+            self.value = value
+            self.next = None
+
+    def __init__(self):
+        self.head = None
+
+    def insert(self, value):
+        self.head = self._insert_helper(self.head, value)
+
+    def _insert_helper(self, node, val):
+        if node is None:
+            return self.Node(val)
+        node.next = self._insert_helper(node.next, val)
+        return node
+
+    def delete(self, val):
+        if self.head is None:
+            return
+        if self.head.value == val:
+            self.head = self.head.next
+        else:
+            self._delete_helper(self.head, val)
+
+    def _delete_helper(self, node, val):
+        if node is None or node.next is None:
+            return
+        if node.next.value == val:
+            node.next = node.next.next
+        else:
+            self._delete_helper(node.next, val)
+
+
+class Queue:
+    class Node:
+        def __init__(self,value):
+            self.value=value
+            self.next= None
+
+    def __init__(self):
+        self.head=None
+
+    def insert(self,value):
+        self.insertHelper(self.head,value)
+
+    def insertHelper(self,node,val):
+        if node is None:
+            return self.Node(val)
+        node.next= self.insertHelper(node.next,val)
+        return node
+
+    def pop(self):
+        return self.popHelper(self.head)
+
+    def popHelper(self,node):
+        if node is None:
+            return None
+        else:
+            temp=self.head
+            self.head=self.head.next
+            return temp
+
+class Stack:
+    class Node:
+        def __init__(self,value):
+            self.value=value
+            self.next= None
+
+    def __init__(self):
+        self.head=None
+
+    def insert(self,value):
+        self.insertHelper(self.head,value)
+
+    def insertHelper(self,node,val):
+        if node is None:
+            return self.Node(val)
+        node.next= self.insertHelper(node.next,val)
+        return node
+
+    def pop(self):
+        self.head, popped = self.popHelper(self.head)
+        return popped
+
+    def popHelper(self, node):
+        if node is None:
+            return None, None
+        if node.next is None:
+            return None, node
+        node.next, popped = self.popHelper(node.next)
+        return node, popped
+
+class BinaryTree:
+    class Node:
+        def __init__(self,value):
+            self.value=value
+            self.left=None
+            self.right=None
+    def __init__(self):
+        self.root=None
+
+    def insert(self,value):
+        if self.root is None:
+            self.root=self.Node(value)
+        else:
+            self.insertHelper(self.root,value)
+
+    def _insert_recursive(self, node, val):
+        #LevelOrderInsertion
+        Queue = [node]
+        while Queue:
+            current = Queue.pop()
+            if current.left is None:
+                current.left = self.Node(val)
+                return
+            else:
+                Queue.insert(current.left)
+
+            if current.right is None:
+                current.right = self.Node(val)
+                return
+            else:
+                Queue.insert(current.right)
+
+
+        
+class BinarySearchTree:
+    class Node:
+        def __init__(self, value):
+            self.value = value
+            self.left = None
+            self.right = None
+
+    def __init__(self):
+        self.root = None
+
+    def insert(self,value):
+        self.insertHelper(self.root,value)
+
+    def insertHelper(self,node,value):
+        if node is None:
+            return self.Node(value)
+        if node.value < value:
+            node.left=self.insertHelper(node.left,value)
+        else:
+            node.right=self.insertHelper(node.right,value)
+        return node
+
+    def delete(self, val):
+        self.root = self.deleteHelper(self.root, val)
+
+    def deleteHelper(self, node, val):
+        if node is None:
+            return None
+        if val < node.value:
+            node.left = self.deleteHelper(node.left, val)
+        elif val > node.value:
+            node.right = self.deleteHelper(node.right, val)
+        else:
+
+            if node.left is None and node.right is None:
+                return None
+
+            if node.left is None:
+                return node.right
+            if node.right is None:
+                return node.left
+
+            pred = self.findMax(node.left)
+            node.value = pred.value
+            node.left = self.deleteHelper(node.left, pred.value)
+
+        return node
+
+    def findMax(self, node):
+        while node.right is not None:
+            node = node.right
+        return node
+
+    def BFSTraversal(self,node):
+        queue=[node]
+
+        while queue:
+            current = queue.pop(0)
+            print(current.value)
+            if current.left is not None:
+                queue.append(current.left)
+            if current.right is not None:
+                queue.append(current.right)
+
+    def DFSTraversal(self,node):
+        stack=[node]
+
+        while stack:
+            current = stack.pop()
+            print(current.value)
+            if current.left is not None:
+                stack.append(current.left)
+            if current.right is not None:
+                stack.append(current.right)
+
+class Dictionary: #Basically Hashmap
+
+    class Node:
+        def __init__(self, key, data):
+            self.key = key
+            self.data = data
+            self.next = None
+
+    def __init__(self,size):
+        self.size=size
+        self.file=[None]*size
+
+    def hash(self,name):
+        count=0
+        for ch in name:
+            count+=ord(ch)
+        return count % self.size
+
+    def insert(self,name,grade):
+        hashedIndex=self.hash(name)
+        node=self.file[hashedIndex]
+
+        if node is None:
+            self.file[hashedIndex]=self.Node(name,grade)
+            return
+
+        prev=None
+
+        while node is not None:
+            if node.key==name:
+                node.data=grade
+                return
+            prev=node
+            node=node.next
+        prev.next=self.Node(name,grade)
+
+    def delete(self,name):
+        hashedIndex=self.hash(name)
+        node=self.file[hashedIndex]
+        prev=None
+
+        while node is not None:
+            if node.key == name:
+                if prev is None:
+                    self.file[hashedIndex]=node.next
+                else:
+                    prev.next=node.next
+                return
+            prev=node
+            node=node.next
+        print(f"{name} not found")
+
+
+
+    class MaxHeap: #MaxHeap using List
+
+        def __init__(self):
+            self.heap=[]
+
+
+        def sink(self,index):
+            largest=index
+            leftIndex=self.left(index)
+            rightIndex = self.right(index)
+
+            if leftIndex < len(self.heap) and self.heap[leftIndex] > self.heap[largest]:
+                largest = leftIndex
+            if rightIndex < len(self.heap) and self.heap[rightIndex] > self.heap[largest]:
+                largest = rightIndex
+            if largest!=index:
+                self.swap(largest,index)
+                self.sink(largest)
+
+
+
+        def swim(self,index):
+            if index==0:
+                return
+            parent=self.heap[self.parent(index)]
+            if parent<self.heap[index]:
+                self.swap(parent(index), index)
+                self.swim(parent(index))
+
+        def insert(self, value):
+            self.heap.append(value)
+            self.swim(len(self.heap) - 1)
+
+        def pop(self):
+            if not self.heap:
+                return None
+            value=self.heap[0]
+            lastValue= self.heap[len(self.heap) - 1]
+            self.heap[0]=lastValue
+            self.heap.pop(len(self.heap) - 1)
+            self.sink(0)
+            return value
+
+        def heapSort(self):
+            sorted_arr = []
+            backup = self.heap.copy()
+            while self.heap:
+                sorted_arr.append(self.pop())
+            self.heap = backup
+            return sorted_arr
+
+
+        def left(self,index):
+            return index * 2 + 1
+
+        def right(self,index):
+            return index*2+2
+
+        def parent(self,index):
+            return (index - 1) // 2
+
+        def swap(self,a,b):
+            temp=self.heap[a]
+            self.heap[a]=self.heap[b]
+            self.heap[b] = temp
+
+    class Graph:
+        def __init__(self):
+            self.adj_list = {}
+
+        def add_vertex(self, vertex):
+            if vertex not in self.adj_list:
+                self.adj_list[vertex] = []
+
+        def add_edge(self, src, dest):
+            self.add_vertex(src)
+            self.add_vertex(dest)
+            self.adj_list[src].append(dest)
+            self.adj_list[dest].append(src)  # Remove for directed graph
+
+        def print_graph(self):
+            for vertex in self.adj_list:
+                print(f"{vertex} -> {self.adj_list[vertex]}")
+
+        def get_neighbors(self, vertex):
+            return self.adj_list.get(vertex, [])
+
+        def has_vertex(self, vertex):
+            return vertex in self.adj_list
