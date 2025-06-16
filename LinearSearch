@@ -1,9 +1,0 @@
-static boolean LinearSearch(String search,String[] arr) {
-        boolean found=false;
-        for (int i = 0; i < arr.length; i++) {
-            if(search==arr[i]){
-                found=true;
-            }
-        }
-        return found;
-    }
